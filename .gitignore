@@ -14,3 +14,5 @@ jwt_crack-test-*
 *.o
 *.obj
 *.lst
+trace.def
+trace.log
