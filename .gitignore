@@ -1,0 +1,16 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/jwt_crack
+jwt_crack.so
+jwt_crack.dylib
+jwt_crack.dll
+jwt_crack.a
+jwt_crack.lib
+jwt_crack-test-*
+*.exe
+*.pdb
+*.o
+*.obj
+*.lst
