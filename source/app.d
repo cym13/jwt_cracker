@@ -18,20 +18,19 @@ struct MacAlgorithm {
     HashAlg digest;
 }
 
-MacAlgorithm HS256 = MacAlgorithm("HS256", 256/8,
+template HSTemplate(string sz) {
+    enum HSTemplate = `
+        MacAlgorithm HS` ~ sz ~ ` = MacAlgorithm("HS` ~ sz ~ `", ` ~ sz ~ `/8,
         function void(const(ubyte)[] data, const(ubyte)[] secret, ubyte[] result) {
-            result[] = hmac!SHA256(data, secret);
+            result[] = hmac!SHA` ~ sz ~ `(data, secret);
         });
+    `;
+}
 
-MacAlgorithm HS384 = MacAlgorithm("HS384", 384/8,
-        function void(const(ubyte)[] data, const(ubyte)[] secret, ubyte[] result) {
-            result[] = hmac!SHA384(data, secret);
-        });
-
-MacAlgorithm HS512 = MacAlgorithm("HS512", 512/8,
-        function void(const(ubyte)[] data, const(ubyte)[] secret, ubyte[] result) {
-            result[] = hmac!SHA512(data, secret);
-        });
+mixin(HSTemplate!"224");
+mixin(HSTemplate!"256");
+mixin(HSTemplate!"384");
+mixin(HSTemplate!"512");
 
 static class JwtException : Exception { mixin basicExceptionCtors; }
 
@@ -98,6 +97,8 @@ struct Jwt {
                                                            .to!string);
 
         switch (decodedHeader["alg"].str) {
+            case "HS224":
+                return HS224;
             case "HS256":
                 return HS256;
             case "HS384":
@@ -118,19 +119,23 @@ struct Jwt {
 }
 
 bool dictionaryTest(in Jwt token, in string[] candidates, out string result) {
-    auto data = B64.encode(token.header) ~ "." ~ B64.encode(token.payload);
-    auto alg  = token.algorithm;
-
+    // 5 seems good, the tasks are work intensive so there's no point in
+    // making too many, but there is some gain in not having as many as the
+    // number of CPUs
     auto numTasks = totalCPUs * 5;
     auto taskpool = new TaskPool(numTasks);
 
+    // Allocate one buffer per task to avoid allocations in the loop and
+    // sharing state between parallel tasks
     ubyte[][] buffers;
     foreach (i ; 0 .. numTasks+1)
-        buffers ~= new ubyte[alg.size];
+        buffers ~= new ubyte[token.algorithm.size];
+
+    auto data = B64.encode(token.header) ~ "." ~ B64.encode(token.payload);
 
     bool found = false;
     foreach(candidate ; taskpool.parallel(candidates)) {
-        if (token.check(alg,
+        if (token.check(token.algorithm,
                         cast(ubyte[])data,
                         cast(ubyte[])candidate.representation,
                         buffers[taskpool.workerIndex]))
@@ -140,7 +145,8 @@ bool dictionaryTest(in Jwt token, in string[] candidates, out string result) {
             taskpool.stop;
         }
     }
-    taskpool.finish();
+
+    taskpool.finish;
     return found;
 }
 
@@ -155,13 +161,13 @@ void main(string[] args) {
     string dicFilename = args[2];
 
     File dicFile;
-    if (dicFilename == "-") {
+    if (dicFilename == "-")
         dicFile = stdin;
-    }
-    else {
+    else
         dicFile = File(dicFilename, "rb");
-    }
 
+    // Load all candidates in memory
+    // This makes it easier to divide up the tasks for parallel processing later
     string[] candidates = dicFile.byLineCopy(KeepTerminator.no).array;
     if (dicFile != stdin)
         dicFile.close;
