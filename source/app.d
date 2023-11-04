@@ -10,26 +10,27 @@ import std.exception: basicExceptionCtors;
 import std.conv;
 
 alias B64 = Base64Impl!('-', '_', Base64.NoPadding);
-alias HashAlg = ubyte[] function(const(ubyte)[], const(ubyte)[]);
+alias HashAlg = void function(const(ubyte)[], const(ubyte)[], ubyte[]);
 
 struct MacAlgorithm {
     string  hashId;
+    size_t  size;
     HashAlg digest;
 }
 
-MacAlgorithm HS256 = MacAlgorithm( "HS256",
-        function ubyte[](const(ubyte)[] data, const(ubyte)[] secret) {
-            return hmac!SHA256(data, secret).array;
+MacAlgorithm HS256 = MacAlgorithm("HS256", 256/8,
+        function void(const(ubyte)[] data, const(ubyte)[] secret, ubyte[] result) {
+            result[] = hmac!SHA256(data, secret);
         });
 
-MacAlgorithm HS384 = MacAlgorithm( "HS384",
-        function ubyte[](const(ubyte)[] data, const(ubyte)[] secret) {
-            return hmac!SHA384(data, secret).array;
+MacAlgorithm HS384 = MacAlgorithm("HS384", 384/8,
+        function void(const(ubyte)[] data, const(ubyte)[] secret, ubyte[] result) {
+            result[] = hmac!SHA384(data, secret);
         });
 
-MacAlgorithm HS512 = MacAlgorithm( "HS512",
-        function ubyte[](const(ubyte)[] data, const(ubyte)[] secret) {
-            return hmac!SHA512(data, secret).array;
+MacAlgorithm HS512 = MacAlgorithm("HS512", 512/8,
+        function void(const(ubyte)[] data, const(ubyte)[] secret, ubyte[] result) {
+            result[] = hmac!SHA512(data, secret);
         });
 
 static class JwtException : Exception { mixin basicExceptionCtors; }
@@ -63,7 +64,8 @@ struct Jwt {
                     ~ "."
                     ~ B64.encode(result.payload);
 
-        result.mac = alg.digest(cast(ubyte[])data, secret).array;
+        result.mac =  new ubyte[alg.size];
+        alg.digest(cast(ubyte[])data, secret, result.mac);
 
         return result;
     }
@@ -80,7 +82,13 @@ struct Jwt {
     }
 
     bool check(in MacAlgorithm alg, in ubyte[] data, in ubyte[] secret) const {
-        return alg.digest(data, secret) == mac;
+        ubyte[] buf = new ubyte[alg.size];
+        return check(alg, data, secret, buf);
+    }
+
+    bool check(in MacAlgorithm alg, in ubyte[] data, in ubyte[] secret, ref ubyte[] buf) const {
+        alg.digest(data, secret, buf);
+        return buf == mac;
     }
 
     MacAlgorithm algorithm() const {
@@ -113,13 +121,20 @@ bool dictionaryTest(in Jwt token, in string[] candidates, out string result) {
     auto data = B64.encode(token.header) ~ "." ~ B64.encode(token.payload);
     auto alg  = token.algorithm;
 
-    auto taskpool = new TaskPool(totalCPUs * 5);
+    auto numTasks = totalCPUs * 5;
+    auto taskpool = new TaskPool(numTasks);
+
+    ubyte[][] buffers;
+    foreach (i ; 0 .. numTasks+1)
+        buffers ~= new ubyte[alg.size];
 
     bool found = false;
     foreach(candidate ; taskpool.parallel(candidates)) {
         if (token.check(alg,
                         cast(ubyte[])data,
-                        cast(ubyte[])candidate.representation)) {
+                        cast(ubyte[])candidate.representation,
+                        buffers[taskpool.workerIndex]))
+        {
             result = candidate;
             found = true;
             taskpool.stop;
