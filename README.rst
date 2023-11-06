@@ -14,19 +14,19 @@ Example
 
 .. code:: bash
 
-    $ jwt_crack eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidG9tbXkifQ.RvkA8i0Cr4FE4QST9bkTz6eq2fBgDv5NKKeMgfPlm7tPKSMmfMu8BNxsPYBbXZJMELg-eNq2mqPTvATn4r_GQw
+    $ jwt_cracker eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidG9tbXkifQ.RvkA8i0Cr4FE4QST9bkTz6eq2fBgDv5NKKeMgfPlm7tPKSMmfMu8BNxsPYBbXZJMELg-eNq2mqPTvATn4r_GQw
     Header: {"alg":"HS512","typ":"JWT"}
     Payload: {"name":"tommy"}
     Signature:
     46F900F22D02AF8144E10493F5B913CFA7AAD9F0600EFE4D28A78C81F3E59BBB4F2923267CCBBC04DC6C3D805B5D924C10B83E78DAB69AA3D3BC04E7E2BFC643
 
-    $ time jwt_crack -B -l - eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidG9tbXkifQ.RvkA8i0Cr4FE4QST9bkTz6eq2fBgDv5NKKeMgfPlm7tPKSMmfMu8BNxsPYBbXZJMELg-eNq2mqPTvATn4r_GQw
+    $ time jwt_cracker -B -l - eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidG9tbXkifQ.RvkA8i0Cr4FE4QST9bkTz6eq2fBgDv5NKKeMgfPlm7tPKSMmfMu8BNxsPYBbXZJMELg-eNq2mqPTvATn4r_GQw
     Found: secret
-    ./jwt_crack -B -l -   1153.32s user 1.07s system 378% cpu 5:04.83 total 5m:5s
+    jwt_cracker -B -l -   1153.32s user 1.07s system 378% cpu 5:04.83 total 5m:5s
 
-    $ time jwt_crack -B -l 6 eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidG9tbXkifQ.RvkA8i0Cr4FE4QST9bkTz6eq2fBgDv5NKKeMgfPlm7tPKSMmfMu8BNxsPYBbXZJMELg-eNq2mqPTvATn4r_GQw
+    $ time jwt_cracker -B -l 6 eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidG9tbXkifQ.RvkA8i0Cr4FE4QST9bkTz6eq2fBgDv5NKKeMgfPlm7tPKSMmfMu8BNxsPYBbXZJMELg-eNq2mqPTvATn4r_GQw
     Found: secret
-    ./jwt_crack -B -l 6   1023.64s user 0.79s system 379% cpu 4:30.26 total
+    jwt_cracker -B -l 6   1023.64s user 0.79s system 379% cpu 4:30.26 total
 
 
 Documentation

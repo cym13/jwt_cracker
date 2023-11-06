@@ -5,5 +5,5 @@
 	"copyright": "Copyright © 2023, Cédric Picard",
 	"description": "HS512 JWT cracker",
 	"license": "MIT",
-	"name": "jwt_crack"
+	"name": "jwt_cracker"
 }
