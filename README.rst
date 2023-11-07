@@ -9,8 +9,21 @@ been found.
 It is written in D for ease of development, natively compiled performance and
 tight control over memory usage.
 
+Why this weird default alphabet for bruteforce?
+===============================================
+
+This alphabet was the result of frequency analysis on several large leaked
+password databases, sorted from the most frequent character to the least.
+The selected alphabet successfully cracks 74% of the passwords studied.
+We could aim for higher but we're dealing with exponential growth so
+any letter added to the alphabet costs a lot of time. This felt like a nice
+balance but your mileage may vary.
+
 Example
 =======
+
+On an old Intel Core i7-3520M, using bruteforce with the default alphabet and
+a length from 0 to infinity.
 
 .. code:: bash
 
@@ -23,10 +36,6 @@ Example
     $ time jwt_cracker -B -l - eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidG9tbXkifQ.RvkA8i0Cr4FE4QST9bkTz6eq2fBgDv5NKKeMgfPlm7tPKSMmfMu8BNxsPYBbXZJMELg-eNq2mqPTvATn4r_GQw
     Found: secret
     jwt_cracker -B -l -   1153.32s user 1.07s system 378% cpu 5:04.83 total 5m:5s
-
-    $ time jwt_cracker -B -l 6 eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidG9tbXkifQ.RvkA8i0Cr4FE4QST9bkTz6eq2fBgDv5NKKeMgfPlm7tPKSMmfMu8BNxsPYBbXZJMELg-eNq2mqPTvATn4r_GQw
-    Found: secret
-    jwt_cracker -B -l 6   1023.64s user 0.79s system 379% cpu 4:30.26 total
 
 
 Documentation
@@ -70,7 +79,7 @@ Documentation
 Building
 ========
 
-Use dub. Usage of the LDC compiler is strongly recommended for performance.
+Use dub. Usage of the LDC compiler is *strongly* recommended for performance.
 
 ::
 
@@ -82,7 +91,7 @@ License
 This program is under the GPLv3 License.
 
 You should have received a copy of the GNU General Public License
-along with this program. If not, see <http://www.gnu.org/licenses/>.
+along with this program. If not, see http://www.gnu.org/licenses/.
 
 Contact
 =======
