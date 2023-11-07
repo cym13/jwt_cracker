@@ -384,7 +384,10 @@ int main(string[] args) {
             return 0;
         }
 
-        if (dictionaryPath != "" && !readable(dictionaryPath)) {
+        // "-" has the special meaning of stdin
+        if (dictionaryPath != "" && dictionaryPath != "-"
+                                 && !readable(dictionaryPath))
+        {
             stderr.writeln("Unreadable file: ", dictionaryPath);
             return 1;
         }
