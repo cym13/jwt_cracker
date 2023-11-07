@@ -458,15 +458,29 @@ int main(string[] args) {
     }
 
     if (shouldEncodeJwt) {
-        auto encodedJwt = Jwt.encode(headerToEncode,
-                                     payloadToEncode,
-                                     secretToEncode.representation);
+        Jwt encodedJwt;
+        try {
+            encodedJwt = Jwt.encode(headerToEncode,
+                                    payloadToEncode,
+                                    secretToEncode.representation);
+        } catch (JwtException e) {
+            writeln(e.msg);
+            return 1;
+        }
 
         writeln("Encoded: ", encodedJwt);
     }
 
     if (!shouldPerformDictionaryAttack && !shouldPerformBruteforceAttack)
         return 0;
+
+    // Checks that the algorithm is supported
+    try {
+        jwtToCrack.algorithm;
+    } catch (JwtException e) {
+        stderr.writeln(e.msg);
+        return 1;
+    }
 
     bool found = false;
     string result;
