@@ -9,6 +9,11 @@ been found.
 It is written in D for ease of development, natively compiled performance and
 tight control over memory usage.
 
+Why not hashcat?
+================
+
+You should probably use hashcat.
+
 Why this weird default alphabet for bruteforce?
 ===============================================
 
