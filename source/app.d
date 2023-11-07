@@ -498,6 +498,7 @@ int main(string[] args) {
         if (dicFile != stdin)
             dicFile.close;
 
+        writeln("[+] Dictionary attack");
         if (dictionaryTest(jwtToCrack, candidates, result))
             found = true;
     }
@@ -530,6 +531,7 @@ int main(string[] args) {
         }
 
         for (size_t len=minLength ; len < maxLength ; len++) {
+            writeln("[+] Bruteforcing length ", len);
             if (bruteforceTest(jwtToCrack, alphabet, len, result)) {
                 found = true;
                 break;

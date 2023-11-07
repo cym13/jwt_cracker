@@ -39,6 +39,13 @@ a length from 0 to infinity.
     46F900F22D02AF8144E10493F5B913CFA7AAD9F0600EFE4D28A78C81F3E59BBB4F2923267CCBBC04DC6C3D805B5D924C10B83E78DAB69AA3D3BC04E7E2BFC643
 
     $ time jwt_cracker -B -l - eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidG9tbXkifQ.RvkA8i0Cr4FE4QST9bkTz6eq2fBgDv5NKKeMgfPlm7tPKSMmfMu8BNxsPYBbXZJMELg-eNq2mqPTvATn4r_GQw
+    [+] Bruteforcing length  0
+    [+] Bruteforcing length  1
+    [+] Bruteforcing length  2
+    [+] Bruteforcing length  3
+    [+] Bruteforcing length  4
+    [+] Bruteforcing length  5
+    [+] Bruteforcing length  6
     Found: secret
     jwt_cracker -B -l -   1153.32s user 1.07s system 378% cpu 5:04.83 total 5m:5s
 
