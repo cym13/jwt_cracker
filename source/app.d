@@ -46,7 +46,7 @@ Options:
                                     3-  means 3 to infinity
 ";
 
-immutable vernum="1.0.0";
+immutable vernum="1.0.1";
 
 alias B64 = Base64Impl!('-', '_', Base64.NoPadding);
 alias HashAlg = void function(const(ubyte)[], const(ubyte)[], ubyte[]);
